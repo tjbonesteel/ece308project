@@ -132,17 +132,14 @@ public class GameManager extends GameCore {
                 player.jump(false);
             }
             if (shoot.isPressed()){
-            	//make new bullet
-            	resourceManager.addBullet(map, player.getX(), player.getY(), player.getPlayerFacingRight());
-            	/*Bullet bullet = new
-            	if(player.getPlayerFacingRight() == 1){
-                	bulletXVelocity = bullet.getBulletSpeed();
-            		
-            	}else{
-            		bulletXVelocity = -(bullet.getBulletSpeed());
-            	}*/
+            	player.setState(1,elapsedTime,1);
+            	if(player.canShoot == 1){
+                	resourceManager.addBullet(map, player.getX(), player.getY(), player.getPlayerFacingRight());
+                	
+            	}
             	
             }
+            player.setState(0,elapsedTime,0);
             player.setVelocityX(velocityX);
         }
 
