@@ -28,6 +28,7 @@ public class ResourceManager {
     private Sprite goalSprite;
     private Sprite grubSprite;
     private Sprite flySprite;
+    private Sprite bulletSprite;
 
     /**
         Creates a new ResourceManager with the specified
@@ -36,6 +37,7 @@ public class ResourceManager {
     public ResourceManager(GraphicsConfiguration gc) {
         this.gc = gc;
         loadTileImages();
+        loadBulletSprite();
         loadCreatureSprites();
         loadPowerUpSprites();
     }
@@ -213,7 +215,18 @@ public class ResourceManager {
     // -----------------------------------------------------------
     // code for loading sprites and images
     // -----------------------------------------------------------
-
+    public void addBullet(TileMap map, float x, float y, boolean facingRight){
+    	Sprite bullet = (Sprite)bulletSprite.clone(); 
+    	bullet.setX(x);
+    	bullet.setY(y);
+    	if(facingRight){
+        	bullet.setVelocityX(.5f);
+    	}else{
+    		bullet.setVelocityX(-.5f);
+    	}
+    	map.addSprite(bullet);
+    	
+    }
 
     public void loadTileImages() {
         // keep looking for tile A,B,C, etc. this makes it
@@ -231,6 +244,12 @@ public class ResourceManager {
         }
     }
 
+    public void loadBulletSprite(){
+    	Image bulletImage = loadImage("bullet.png");
+    	Animation bulletAnim = new Animation();    	
+    	bulletAnim = createBulletAnim(bulletImage);
+        bulletSprite = new Bullet(bulletAnim);
+    }
 
     public void loadCreatureSprites() {
 
@@ -282,6 +301,11 @@ public class ResourceManager {
             grubAnim[2], grubAnim[3]);
     }
 
+    private Animation createBulletAnim(Image bullet){
+    	Animation anim = new Animation();
+    	anim.addFrame(bullet, 250);
+    	return anim;
+    }
 
     private Animation createPlayerAnim(Image player1,
         Image player2, Image player3)
@@ -296,9 +320,8 @@ public class ResourceManager {
         return anim;
     }
 
-
-    private Animation createFlyAnim(Image img1, Image img2,
-        Image img3)
+    
+    private Animation createFlyAnim(Image img1, Image img2,Image img3)
     {
         Animation anim = new Animation();
         anim.addFrame(img1, 50);

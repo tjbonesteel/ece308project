@@ -41,6 +41,7 @@ public class GameManager extends GameCore {
     private InputManager inputManager;
     private TileMapRenderer renderer;
 
+    private GameAction shoot;
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
@@ -90,6 +91,7 @@ public class GameManager extends GameCore {
 
 
     private void initInput() {
+    	shoot = new GameAction("shoot");
         moveLeft = new GameAction("moveLeft");
         moveRight = new GameAction("moveRight");
         jump = new GameAction("jump",
@@ -105,6 +107,7 @@ public class GameManager extends GameCore {
         inputManager.mapToKey(moveRight, KeyEvent.VK_RIGHT);
         inputManager.mapToKey(jump, KeyEvent.VK_SPACE);
         inputManager.mapToKey(exit, KeyEvent.VK_ESCAPE);
+        inputManager.mapToKey(shoot, KeyEvent.VK_F);
     }
 
 
@@ -113,18 +116,32 @@ public class GameManager extends GameCore {
         if (exit.isPressed()) {
             stop();
         }
-
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) {
+        	float bulletXVelocity = 0;
             float velocityX = 0;
             if (moveLeft.isPressed()) {
                 velocityX-=player.getMaxSpeed();
+                player.setFacingRight(false);
             }
             if (moveRight.isPressed()) {
                 velocityX+=player.getMaxSpeed();
+                player.setFacingRight(true);
             }
             if (jump.isPressed()) {
                 player.jump(false);
+            }
+            if (shoot.isPressed()){
+            	//make new bullet
+            	resourceManager.addBullet(map, player.getX(), player.getY(), player.getPlayerFacingRight());
+            	/*Bullet bullet = new
+            	if(player.getPlayerFacingRight() == 1){
+                	bulletXVelocity = bullet.getBulletSpeed();
+            		
+            	}else{
+            		bulletXVelocity = -(bullet.getBulletSpeed());
+            	}*/
+            	
             }
             player.setVelocityX(velocityX);
         }

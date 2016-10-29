@@ -8,7 +8,7 @@ import com.brackeen.javagamebook.graphics.Animation;
 public class Player extends Creature {
 
     private static final float JUMP_SPEED = -.95f;
-
+    private boolean playerFacingRight;
     private boolean onGround;
 
     public Player(Animation left, Animation right,
@@ -57,6 +57,14 @@ public class Player extends Creature {
         }
     }
 
+    public void setFacingRight(boolean i){
+    	this.playerFacingRight = i;
+    }
+    
+    public boolean getPlayerFacingRight(){
+    	if(playerFacingRight) return true;
+    	else return false;
+    }
 
     public float getMaxSpeed() {
         return 0.5f;
