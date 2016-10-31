@@ -218,7 +218,7 @@ public class ResourceManager {
     public void addBullet(TileMap map, float x, float y, boolean facingRight){
     	Sprite bullet = (Sprite)bulletSprite.clone(); 
     	bullet.setX(x);
-    	bullet.setY(y);
+    	bullet.setY(y+30);
     	if(facingRight){
         	bullet.setVelocityX(.5f);
     	}else{

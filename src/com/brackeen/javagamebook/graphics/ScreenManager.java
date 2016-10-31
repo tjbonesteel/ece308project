@@ -1,5 +1,6 @@
 package com.brackeen.javagamebook.graphics;
-
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -115,7 +116,15 @@ public class ScreenManager {
         frame.setUndecorated(true);
         frame.setIgnoreRepaint(true);
         frame.setResizable(false);
-
+        /*
+        Panel panel = new Panel();
+        JLabel health = new JLabel("Health");
+        health.setFont((new java.awt.Font("Times New Roman", 1, 30)));
+        health.setBounds(10, 10, 10, 10);
+        health.setBackground(Color.GREEN);
+        panel.add(health);
+        frame.add(panel);
+*/
         device.setFullScreenWindow(frame);
 
         if (displayMode != null &&

@@ -11,6 +11,7 @@ public class Bullet extends Sprite {
 	private int state;
 	private int stateTime;
 	private static final float BULLET_SPEED = .025f;
+	private boolean playerBullet = true;
 	
 	public Bullet(Animation anim){
 		super(anim);
@@ -32,6 +33,10 @@ public class Bullet extends Sprite {
         }
 		
 	}*/
+	
+	public boolean isPlayerBullet(){
+		return this.playerBullet;
+	}
 	public void setY(float y) {
         super.setY(y);
     }
@@ -44,6 +49,10 @@ public class Bullet extends Sprite {
         return state;
     }
 
+	public boolean isFlying(){
+		return (state == STATE_FLYING);
+	}
+	
 	public float getBulletSpeed(){
 		return BULLET_SPEED;
 	}

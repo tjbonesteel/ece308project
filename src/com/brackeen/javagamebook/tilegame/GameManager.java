@@ -3,6 +3,7 @@ package com.brackeen.javagamebook.tilegame;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
+import java.util.Timer;
 
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
@@ -40,20 +41,27 @@ public class GameManager extends GameCore {
     private Sound boopSound;
     private InputManager inputManager;
     private TileMapRenderer renderer;
-
+    private boolean pressed = true;
+    private int bulletCount = 0;
+    private int oldXTile = 0;
     private GameAction shoot;
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
     private GameAction exit;
-
-
+    private int healthFlag = 1;
+    
+    private static long healthTime;
+    private static long time= System.currentTimeMillis();
+    private static long bulletTime;
+    private static long currentTime= System.currentTimeMillis();
     public void init() {
         super.init();
 
         // set up input manager
         initInput();
 
+    	
         // start resource manager
         resourceManager = new ResourceManager(
         screen.getFullScreenWindow().getGraphicsConfiguration());
@@ -113,32 +121,98 @@ public class GameManager extends GameCore {
 
     private void checkInput(long elapsedTime) {
 
+    	time = System.currentTimeMillis();		
         if (exit.isPressed()) {
             stop();
         }
+
         Player player = (Player)map.getPlayer();
         if (player.isAlive()) {
-        	float bulletXVelocity = 0;
             float velocityX = 0;
+            
             if (moveLeft.isPressed()) {
                 velocityX-=player.getMaxSpeed();
                 player.setFacingRight(false);
+                player.xTile = TileMapRenderer.pixelsToTiles(player.getX());
+                if(player.xTile != oldXTile){
+                	player.addHealth(1);
+                	oldXTile = player.xTile;
+                }
             }
             if (moveRight.isPressed()) {
                 velocityX+=player.getMaxSpeed();
                 player.setFacingRight(true);
+                player.xTile = TileMapRenderer.pixelsToTiles(player.getX());
+                if(player.xTile != oldXTile){
+                	player.addHealth(1);
+                	oldXTile = player.xTile;
+                }
             }
+            System.out.println("Health" + player.health);
             if (jump.isPressed()) {
                 player.jump(false);
             }
             if (shoot.isPressed()){
-            	player.setState(1,elapsedTime,1);
-            	if(player.canShoot == 1){
-                	resourceManager.addBullet(map, player.getX(), player.getY(), player.getPlayerFacingRight());
-                	
+            	//System.out.println("time - BulletTime: " + (time - bulletTime));
+            	if(time - bulletTime < 10){
+            		if(bulletCount <= 10){
+	            		currentTime = System.currentTimeMillis();
+	            		//pressed = false;
+	            		//System.out.println("inside loop:" + (time -  currentTime) );
+	            		System.out.println("inside loop:" + (time -  bulletTime) );
+	                	player.setState(2,elapsedTime,1);
+	                	resourceManager.addBullet(map, player.getX(), player.getY(), player.getPlayerFacingRight());
+            		}else{
+            			if(time - currentTime > 1000){
+            				bulletCount = 0;
+            			}
+            		}
+            	System.out.println("outside loop:" + (time -  bulletTime) );
+            	}else if(time - bulletTime > 250){
+            		//increment bullet counter here
+            		bulletCount++;
+            		bulletTime = System.currentTimeMillis();
+            		System.out.println("Made it in");
+            		System.out.println("reset loop:" + (time -  bulletTime) );
+
+            		
             	}
+            } else {
+            		bulletCount = 0;
+                	bulletTime= System.currentTimeMillis();
+                	currentTime = 0;
+                	pressed = true;
+            }
+            
+            if(oldXTile == player.xTile && healthFlag == 1){
+            	healthTime = System.currentTimeMillis();
+            	healthFlag = 0;
             	
             }
+            if(oldXTile == player.xTile && time - healthTime >= 1000 && healthFlag == 0){
+            		player.addHealth(5);
+                	healthFlag = 1;
+            }
+            if(oldXTile != player.xTile){
+                	healthTime = 0;
+                	healthFlag = 1;
+            }
+            
+            /*if ((time - currentTime > 2500) && !pressed && shoot.isPressed());
+            {
+            	System.out.println("paused bullet " + (time - currentTime));
+            	pressed = true;
+            	bulletTime = System.currentTimeMillis();
+            }*/
+            
+            /*if (shoot.isPressed() && pressed == false){
+            	//System.out.println(pressed);
+            	player.wasteTime();
+            	bulletTime = System.currentTimeMillis();
+        		pressed = true;
+        	}else {
+        		currentTime = 0;
+        	}*/
             player.setState(0,elapsedTime,0);
             player.setVelocityX(velocityX);
         }
@@ -229,7 +303,20 @@ public class GameManager extends GameCore {
         if (s2 instanceof Creature && !((Creature)s2).isAlive()) {
             return false;
         }
-
+        Bullet b = null;
+        if (s1 instanceof Player && s2 instanceof Bullet){
+        	b = (Bullet)s2;
+            if(b.isPlayerBullet()){
+            	return false;
+            }
+        }
+        if (s1 instanceof Bullet && s1 instanceof Player){
+        	b = (Bullet)s1;
+            if(b.isPlayerBullet()){
+            	return false;
+            }
+        }
+        
         // get the pixel location of the Sprites
         int s1x = Math.round(s1.getX());
         int s1y = Math.round(s1.getY());
@@ -304,7 +391,7 @@ public class GameManager extends GameCore {
         }
     }
 
-
+    
     /**
         Updates the creature, applying gravity for creatures that
         aren't flying, and checks collisions.
@@ -398,13 +485,29 @@ public class GameManager extends GameCore {
                 soundManager.play(boopSound);
                 badguy.setState(Creature.STATE_DYING);
                 player.setY(badguy.getY() - player.getHeight());
-                player.jump(true);
+                player.addHealth(10);
+                //player.jump(true);
             }
             else {
                 // player dies!
-                player.setState(Creature.STATE_DYING);
+            	player.addHealth(-5);
+            	if(player.health <= 0){
+                    player.setState(Creature.STATE_DYING);
+            		
+            	}
             }
         }
+    }
+    
+    public void checkBulletCollision(Bullet bullet)
+    {
+    	Sprite collisionSprite = getSpriteCollision(bullet);
+    	if (collisionSprite instanceof Creature){
+    		Creature badguy = (Creature)collisionSprite;
+    			//soundManager.play(bulletHit); //Don't have this sound file yet
+    			badguy.setState(Creature.STATE_DYING);
+    	}
+    	bullet.setState(3);
     }
 
 

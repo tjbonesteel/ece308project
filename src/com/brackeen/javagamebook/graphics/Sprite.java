@@ -12,8 +12,46 @@ public class Sprite {
     private float dx;
     private float dy;
 
-    //states
+    public static final int STATE_NORMAL = 0;
+    public static final int STATE_SHOOTING = 1;
+    public static final int STATE_AUTO = 2;
+    public int buttonPressed;
+    public boolean canShoot;
+    private int state;
+    private float stateTime;
+
+    public void wasteTime(){
+    	for (int i = 0; i < 1000000;i++){
+    		for(int j = 0; j < 1000; j++){
+    			
+    		}
+    	}
+    }
     
+    //states
+    public void setState(int state, float elapsedTime, int buttonPressed) {
+    	float currentTime = 0;
+        if (this.state != state) {
+            this.state = state;
+            stateTime = 0;
+            if (state == STATE_NORMAL) {
+            	this.canShoot = false;
+            	this.buttonPressed = 0;
+            	
+            }else if(state == STATE_SHOOTING){
+            	this.canShoot = true;
+            	if(this.buttonPressed == buttonPressed){
+            		state = STATE_AUTO;
+            	}
+            }else if(state == STATE_AUTO){
+            	wasteTime();
+            	this.buttonPressed = buttonPressed;
+            	this.canShoot = true;
+            	
+            	
+            }
+        }
+    }
     /**
         Creates a new Sprite object with the specified Animation.
     */
