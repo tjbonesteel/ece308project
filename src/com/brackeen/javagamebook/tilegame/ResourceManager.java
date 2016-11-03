@@ -215,7 +215,7 @@ public class ResourceManager {
     // -----------------------------------------------------------
     // code for loading sprites and images
     // -----------------------------------------------------------
-    public void addBullet(TileMap map, float x, float y, boolean facingRight){
+    public void addBullet(TileMap map, float x, float y, boolean facingRight, boolean playerBullet){
     	Sprite bullet = (Sprite)bulletSprite.clone(); 
     	bullet.setX(x);
     	bullet.setY(y+30);
@@ -224,6 +224,10 @@ public class ResourceManager {
     	}else{
     		bullet.setVelocityX(-.5f);
     	}
+    	Bullet bullet1 = null;
+    	bullet1 = (Bullet) bullet;
+    	bullet1.setState(Bullet.STATE_FLYING);
+    	bullet1.setPlayerBullet(playerBullet);
     	map.addSprite(bullet);
     	
     }

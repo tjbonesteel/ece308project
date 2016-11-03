@@ -18,12 +18,12 @@ public class Bullet extends Sprite {
 		state = STATE_FLYING;
 	}
 	
-	/*
+	
 	public Object clone(){
 		Constructor constructor = getClass().getConstructors()[0];
 		try {
             return constructor.newInstance(new Object[] {
-                (Animation)bullet.clone()
+                (Animation)anim.clone()
             });
         }
         catch (Exception ex) {
@@ -32,11 +32,16 @@ public class Bullet extends Sprite {
             return null;
         }
 		
-	}*/
+	}
 	
 	public boolean isPlayerBullet(){
 		return this.playerBullet;
 	}
+	
+	public void setPlayerBullet(boolean bool){
+			this.playerBullet = bool;
+	}
+	
 	public void setY(float y) {
         super.setY(y);
     }
@@ -81,8 +86,5 @@ public class Bullet extends Sprite {
 
         // update to "dead" state
         stateTime += elapsedTime;
-        /*if (state == STATE_DYING && stateTime >= DIE_TIME) {
-            setState(STATE_DEAD);
-        }*/
     }
 }
