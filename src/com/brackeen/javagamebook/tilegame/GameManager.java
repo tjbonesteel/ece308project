@@ -195,15 +195,15 @@ public class GameManager extends GameCore {
 		}
 
 	}
-
+	
 	private void creatureShoot() {
 		time = System.currentTimeMillis();
-		Iterator iter = map.getSprites();
+		Iterator<Sprite> iter = map.getSprites();
 		// Queue q = null;
 		Player player = (Player) map.getPlayer();
 
 		while (iter.hasNext()) {
-			Sprite s = (Sprite) iter.next();
+			Sprite s = iter.next();
 			//Grub objects are the dudes that move slowly on the ground
 			if (s instanceof Grub) {
 				Grub shooter = null;
@@ -213,7 +213,7 @@ public class GameManager extends GameCore {
 				
 				if (Math.abs(player.getX() -  shooter.getX()) < 500 && shooter.isAlive()) {
 						if (time - creatureBulletTime < 10) {
-							soundManager.play(gunShotSound);
+							//soundManager.play(gunShotSound);
 							resourceManager.addBullet(map, shooter.getX(), shooter.getY(), false,false);
 						} else if(time - creatureBulletTime > 500){
 							creatureBulletTime = System.currentTimeMillis();
@@ -381,6 +381,7 @@ public class GameManager extends GameCore {
 				} else {
 					updateCreature(creature, elapsedTime);
 				}
+				
 			} else if (sprite instanceof Bullet) {
 				Bullet bullet = (Bullet) sprite;
 				checkBulletCollision(bullet);
@@ -453,11 +454,15 @@ public class GameManager extends GameCore {
 			}
 			creature.collideVertical();
 		}
+		
+		
+		
 		if (creature instanceof Player) {
 			boolean canKill = (oldY < creature.getY());
 			checkPlayerCollision((Player) creature, canKill);
 		}
-
+		
+		
 	}
 
 	/**
